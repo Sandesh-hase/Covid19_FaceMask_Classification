@@ -14,10 +14,14 @@ import re
 import numpy as np
 
 # Keras
-from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+# from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+# from tensorflow.keras.models import load_model
+# from tensorflow.keras.preprocessing import image
+# import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
-
+from tensorflow.keras.applications.mobilenet import preprocess_input
+import numpy as np
 # Flask utils
 from flask import Flask, redirect, url_for, request, render_template
 from werkzeug.utils import secure_filename
@@ -27,7 +31,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # Model saved with Keras model.save()
-MODEL_PATH ='mobile_net.h5'
+MODEL_PATH ='mobile_net-2.h5'
 
 # Load your trained model
 model = load_model(MODEL_PATH)
@@ -36,30 +40,48 @@ model = load_model(MODEL_PATH)
 
 
 
+# def model_predict(img_path, model):
+#     img = image.load_img(img_path, target_size=(224, 224))
+#
+#     # Preprocessing the image
+#     x = image.img_to_array(img)
+#     # x = np.true_divide(x, 255)
+#     ## Scaling
+#     x=x/255
+#     x = np.expand_dims(x, axis=0)
+#
+#
+#     # Be careful how your trained model deals with the input
+#     # otherwise, it won't make correct prediction!
+#     x = preprocess_input(x)
+#
+#     preds = model.predict(x)
+#     preds=np.argmax(preds, axis=1)
+#     if preds==0:
+#         preds="Person detected with Mask...Safe!!"
+#     else:
+#         preds="Person detected without Mask...Unsafe!!"
+#
+#
+#     return preds
+
 def model_predict(img_path, model):
+    # model = load_model('model_vgg19.h5')
+    # img = image.load_img('val/PNEUMONIA/person1946_bacteria_4874.jpeg', target_size=(224, 224))
     img = image.load_img(img_path, target_size=(224, 224))
-
-    # Preprocessing the image
     x = image.img_to_array(img)
-    # x = np.true_divide(x, 255)
-    ## Scaling
-    x=x/255
     x = np.expand_dims(x, axis=0)
-   
+    img_data = preprocess_input(x)
+    classes = model.predict(img_data)
+    print(classes)
 
-    # Be careful how your trained model deals with the input
-    # otherwise, it won't make correct prediction!
-    x = preprocess_input(x)
-
-    preds = model.predict(x)
-    preds=np.argmax(preds, axis=1)
-    if preds==0:
-        preds="Person detected with Mask...Safe!!"
+    if classes[0][0]>0.5:
+        pred= "No Mask Detected...Unsafe!!"
     else:
-        preds="Person detected without Mask...Unsafe!!"
-    
-    
-    return preds
+        pred= "Mask detected...Safe!!"
+
+    return pred
+
 
 
 @app.route('/', methods=['GET'])
