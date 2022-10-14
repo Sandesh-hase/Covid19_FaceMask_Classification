@@ -5,4 +5,5 @@ Download the dataset from:- https://drive.google.com/drive/folders/13SnflMiP2NxE
 
 Prediction:- 
 
-![prediction](https://user-images.githubusercontent.com/98344033/195937449-ed3ca298-ebad-4071-8324-a1f99dde2da2.png)
+![prediction](https://user-images.githubusercontent.com/98344033/195937678-42510e56-d08f-47ed-b14f-b102b35fccfd.png)
+
